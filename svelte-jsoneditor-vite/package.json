@@ -15,7 +15,11 @@
     "vite": "^2.6.4"
   },
   "dependencies": {
+    "ace-builds": "^1.4.13",
     "ajv": "^8.7.1",
-    "svelte-jsoneditor": "^0.3.4"
+    "classnames": "^2.3.1",
+    "json-source-map": "^0.6.1",
+    "natural-compare-lite": "^1.4.0",
+    "svelte-jsoneditor": "github:milahu/svelte-jsoneditor#merge-6d0df58-and-2ddd978"
   }
 }
