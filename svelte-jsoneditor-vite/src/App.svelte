@@ -1,65 +1,113 @@
 <script>
-  import logo from './assets/svelte.png'
-  import Counter from './lib/Counter.svelte'
+  import { JSONEditor, createAjvValidator } from 'svelte-jsoneditor' // replace this with 'svelte-jsoneditor'
+
+  const schema = {
+    title: 'Employee',
+    description: 'Object containing employee details',
+    type: 'object',
+    properties: {
+      firstName: {
+        title: 'First Name',
+        description: 'The given name.',
+        examples: ['John'],
+        type: 'string'
+      },
+      lastName: {
+        title: 'Last Name',
+        description: 'The family name.',
+        examples: ['Smith'],
+        type: 'string'
+      },
+      gender: {
+        title: 'Gender',
+        enum: ['male', 'female']
+      },
+      availableToHire: {
+        type: 'boolean',
+        default: false
+      },
+      age: {
+        description: 'Age in years',
+        type: 'integer',
+        minimum: 0,
+        examples: [28, 32]
+      },
+      job: {
+        $ref: 'job'
+      }
+    },
+    required: ['firstName', 'lastName']
+  }
+
+  const schemaRefs = {
+    job: {
+      title: 'Job description',
+      type: 'object',
+      required: ['address'],
+      properties: {
+        company: {
+          type: 'string',
+          examples: ['ACME', 'Dexter Industries']
+        },
+        role: {
+          description: 'Job title.',
+          type: 'string',
+          examples: ['Human Resources Coordinator', 'Software Developer'],
+          default: 'Software Developer'
+        },
+        address: {
+          type: 'string'
+        },
+        salary: {
+          type: 'number',
+          minimum: 120,
+          examples: [100, 110, 120]
+        }
+      }
+    }
+  }
+
+  const validator = createAjvValidator(schema, schemaRefs)
+
+  let content = {
+    text: undefined, // used when in code mode
+    json: {
+      firstName: 'John',
+      lastName: 'Doe',
+      gender: null,
+      age: '28',
+      availableToHire: true,
+      job: {
+        company: 'freelance',
+        role: 'developer',
+        salary: 100
+      }
+    }
+  }
 </script>
 
-<main>
-  <img src={logo} alt="Svelte Logo" />
-  <h1>Hello world!</h1>
+<svelte:head>
+  <title>JSON Schema validation | svelte-jsoneditor</title>
+</svelte:head>
 
-  <Counter />
+<h1>JSON Schema validation</h1>
 
-  <p>
-    Visit <a href="https://svelte.dev">svelte.dev</a> to learn how to build Svelte
-    apps.
-  </p>
+<p>
+  This example demonstrates JSON schema validation. The JSON object in this example must contain
+  properties like <code>firstName</code> and <code>lastName</code>, can can optionally have a
+  property <code>age</code> which must be a positive integer.
+</p>
+<p>
+  See <a href="http://json-schema.org/" target="_blank">http://json-schema.org/</a> for more information.
+</p>
 
-  <p>
-    Check out <a href="https://github.com/sveltejs/kit#readme">SvelteKit</a> for
-    the officially supported framework, also powered by Vite!
-  </p>
-</main>
+<div class="editor">
+  <JSONEditor bind:content {validator} />
+</div>
 
 <style>
-  :root {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-      Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  }
-
-  main {
-    text-align: center;
-    padding: 1em;
-    margin: 0 auto;
-  }
-
-  img {
-    height: 16rem;
-    width: 16rem;
-  }
-
-  h1 {
-    color: #ff3e00;
-    text-transform: uppercase;
-    font-size: 4rem;
-    font-weight: 100;
-    line-height: 1.1;
-    margin: 2rem auto;
-    max-width: 14rem;
-  }
-
-  p {
-    max-width: 14rem;
-    margin: 1rem auto;
-    line-height: 1.35;
-  }
-
-  @media (min-width: 480px) {
-    h1 {
-      max-width: none;
-    }
-
-    p {
-      max-width: none;
-    }
+  .editor {
+    width: 700px;
+    height: 400px;
   }
 </style>
